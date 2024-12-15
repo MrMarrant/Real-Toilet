@@ -20,10 +20,13 @@ ENT.Author = "MrMarrant"
 ENT.PrintName = "Toilet"
 ENT.Spawnable = true
 ENT.Category = "Real Toilet"
+ENT.AutomaticFrameAdvance = true
 
 -- Set up every var related to the entity we will use
 function ENT:SetupDataTables()
     self:NetworkVar("Bool", 0, "IsFull")
+    self:NetworkVar("Bool", 1, "HasPoop")
+    self:NetworkVar("Bool", 2, "IsFlushed")
     self:NetworkVar("Int", 0, "PaperAvailable")
     self:NetworkVar("Entity", 0, "Seat")
 end

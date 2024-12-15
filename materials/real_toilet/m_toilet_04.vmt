@@ -1,0 +1,9 @@
+"VertexlitGeneric"
+{
+	$basetexture "real_toilet/m_toilet_04"
+
+	$rimlight	"1"
+	$rimmask	"1"
+	$rimlightboost	"1"
+	$rimlightexponent	"2"
+}

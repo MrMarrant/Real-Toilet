@@ -36,73 +36,30 @@ function meta:GetPoopValue()
 end
 
 function meta:PoopUpdate()
-    if not REAL_TOILET_CONFIG.Settings.PoopSpeed or not REAL_TOILET_CONFIG.Settings.PoopMeterEnabled then return end
+    if not REAL_TOILET_CONFIG.Settings.PoopSpeed or not GetConVar("PoopMeterEnabled"):GetBool() then return end
     if #ents.FindByClass("real_toilet") == 0 then return end --? If there are no toilets on the map
     if not self:Alive() then return end
 
     local poop_meter = self:GetPoopValue()
-
-    self:SetPoopValue(poop_meter and math.Clamp(poop_meter - REAL_TOILET_CONFIG.Settings.PoopSpeed, 0, 100) or 100)
-    print("Poop meter : " .. poop_meter)
-
+    poop_meter = poop_meter and math.Clamp(poop_meter - REAL_TOILET_CONFIG.Settings.PoopSpeed, 0, 100) or 100
+    self:SetPoopValue(poop_meter)
     if (poop_meter <= 50) then
-        local chance = math.random(1, 100)
-        if chance >= (100 - poop_meter) then
-            self:EmitSound(REAL_TOILET_CONFIG.Sounds.StomachNoise, 75, math.random(90, 110))
+        local chance = math.random(1, 50)
+        if chance >= poop_meter then
+            self:EmitSound(REAL_TOILET_CONFIG.Sounds.StomachNoise[math.random(#REAL_TOILET_CONFIG.Sounds.StomachNoise)], 75, math.random(90, 110))
         end
     end
 
-    if poop_meter <= 10 then
-        -- TODO : Pénalité : Vitesse de déplacement réduite, effet d'hud ?
+    if poop_meter <= 10 and (not self._ToiletOldWalkSpeed or not self._ToiletOldRunSpeed) then
+        self:SetPoopStatus()
     end
 end
 
-
-util.AddNetworkString("SitOnEntity")
-
--- Fonction pour faire asseoir un joueur sur une entité
-function SitPlayerOnEntity(ply, targetEnt, offsetVec, offsetAng)
-    if not IsValid(ply) or not ply:IsPlayer() then return end
-    if not IsValid(targetEnt) then return end
-
-    -- Créer un siège dynamique à la position voulue
-    local seat = ents.Create("prop_vehicle_prisoner_pod")
-    if not IsValid(seat) then return end
-
-    -- Configurer le siège
-    seat:SetModel("models/nova/airboat_seat.mdl") -- Modèle de siège standard
-    seat:SetKeyValue("vehiclescript", "scripts/vehicles/prisoner_pod.txt")
-    seat:SetPos(targetEnt:LocalToWorld(offsetVec)) -- Position en fonction du vecteur local
-    seat:SetAngles(targetEnt:LocalToWorldAngles(offsetAng or Angle(0, 0, 0))) -- Orientation optionnelle
-    seat:Spawn()
-    seat:Activate()
-
-    -- Désactiver la physique du siège pour le fixer à l'entité
-    seat:SetMoveType(MOVETYPE_NONE)
-    seat:SetParent(targetEnt) -- Attache le siège à l'entité cible
-
-    -- Faire asseoir le joueur
-    ply:EnterVehicle(seat)
-
-    -- Nettoyage automatique du siège quand le joueur se lève
-    seat:CallOnRemove("PlayerExitSeat", function()
-        if IsValid(ply) and ply:GetVehicle() == seat then
-            ply:ExitVehicle()
-        end
-    end)
+function meta:SetPoopStatus()
+    local old_walk = self:GetWalkSpeed()
+    local old_run = self:GetRunSpeed()
+    self._ToiletOldWalkSpeed = old_walk
+    self._ToiletOldRunSpeed = old_run
+    self:SetWalkSpeed(old_walk * 0.7)
+    self:SetRunSpeed(old_run * 0.7)
 end
-
--- Commande pour tester (exemple)
-concommand.Add("sit_on_entity", function(ply, cmd, args)
-    if not ply:IsAdmin() then return end -- Autorisé seulement aux admins
-
-    local targetEnt = ply:GetEyeTrace().Entity -- Entité visée par le joueur
-    if not IsValid(targetEnt) then
-        ply:ChatPrint("Regardez une entité valide pour utiliser cette commande.")
-        return
-    end
-
-    local offsetVec = Vector(0, 0, 50) -- Exemple d'offset
-    local offsetAng = Angle(0, 0, 0) -- Exemple d'angle
-    SitPlayerOnEntity(ply, targetEnt, offsetVec, offsetAng)
-end)

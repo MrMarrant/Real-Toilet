@@ -1,4 +1,4 @@
--- Real Toilet, this is an addon for Garry's mod game, used mainly for roleplay actions or in a visual immersion context.
+-- SCP-1025, A representation of a paranormal object on a fictional series on the game Garry's Mod.
 -- Copyright (C) 2024  MrMarrant aka BIBI.
 
 -- This program is free software: you can redistribute it and/or modify
@@ -12,10 +12,11 @@
 -- GNU General Public License for more details.
 
 -- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see [gnu.org](https://www.gnu.org/licenses/).
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-local LANG_EN = {
-    no_paper = "No paper left, refill it.",
-}
-
-real_toilet.AddLanguage("en", LANG_EN)
+ENT.Type = "anim"
+ENT.Base = "base_gmodentity"
+ENT.Author = "MrMarrant"
+ENT.PrintName = "Paper Toilet"
+ENT.Spawnable = true
+ENT.Category = "Real Toilet"

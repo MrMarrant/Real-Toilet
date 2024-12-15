@@ -22,20 +22,28 @@ REAL_TOILET_CONFIG.Models = {}
 REAL_TOILET_CONFIG.Models.Toilet = "models/real_toilet/real_toilet.mdl"
 REAL_TOILET_CONFIG.Models.Laxatif = ""
 REAL_TOILET_CONFIG.Models.OrangeJuice = ""
-REAL_TOILET_CONFIG.Models.ToiletPaper = ""
+REAL_TOILET_CONFIG.Models.ToiletPaper = "models/paper_toilet/paper_toilet.mdl"
 
 --Sound Path
 REAL_TOILET_CONFIG.Sounds = {}
-REAL_TOILET_CONFIG.Sounds.Flush = ""
-REAL_TOILET_CONFIG.Sounds.Poop = ""
-REAL_TOILET_CONFIG.Sounds.StomachNoise = ""
-REAL_TOILET_CONFIG.Sounds.Open = ""
-REAL_TOILET_CONFIG.Sounds.Close = ""
+REAL_TOILET_CONFIG.Sounds.Flush = "real_toilet/flush.mp3"
+REAL_TOILET_CONFIG.Sounds.Poop = "real_toilet/fart.mp3"
+REAL_TOILET_CONFIG.Sounds.StomachNoise = {}
+REAL_TOILET_CONFIG.Sounds.StomachNoise[1] = "real_toilet/stomach_01.mp3"
+REAL_TOILET_CONFIG.Sounds.StomachNoise[2] = "real_toilet/stomach_02.mp3"
+REAL_TOILET_CONFIG.Sounds.StomachNoise[3] = "real_toilet/stomach_03.mp3"
+REAL_TOILET_CONFIG.Sounds.Open = "real_toilet/open.mp3"
+REAL_TOILET_CONFIG.Sounds.Close = "real_toilet/close.mp3"
 
 -- Settings
 REAL_TOILET_CONFIG.Settings = {}
 REAL_TOILET_CONFIG.Settings.PoopVars = {}
 REAL_TOILET_CONFIG.Settings.PoopSpeed = 1
-REAL_TOILET_CONFIG.Settings.RepetitionsUpdate = 1
-REAL_TOILET_CONFIG.Settings.PoopMeterEnabled = true
+REAL_TOILET_CONFIG.Settings.RepetitionsUpdate = 14
 REAL_TOILET_CONFIG.Settings.PaperToiletCount = 10
+REAL_TOILET_CONFIG.Settings.PoopTime = 3
+REAL_TOILET_CONFIG.Settings.MinPoopToilet = 80
+
+if SERVER then
+    CreateConVar( "PoopMeterEnabled", 1, {FCVAR_PROTECTED, FCVAR_ARCHIVE}, "When enable, active the poop meter that slowly decrease which inflicts malus on the player when too low.", 0, 1 )
+end

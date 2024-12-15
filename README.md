@@ -8,6 +8,11 @@ Install the addon from the workshop page or by downloading the zip and placing i
 
 ## 🛠️ Functionality
 
+* You can flush the toilet.
+* You can sit on the toilet.
+* Refill with paper.
+* Stomach noise and malus for player that didn't go to the toilet frequently.
+
 ## 🤝 Credits
 
 All the contents can be found [here](https://pastebin.com/wLFqWmET).

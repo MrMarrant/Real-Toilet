@@ -13,10 +13,17 @@
 
 AddCSLuaFile("shared.lua")
 include("shared.lua")
+
 function ENT:Initialize()
 	self:SetModel(REAL_TOILET_CONFIG.Models.Toilet)
 	self:InitVar()
 	self:RebuildPhysics()
+	timer.Simple(0.5, function()
+		if (not IsValid(self)) then return end
+
+		self:ResetSequence(2)
+		self:EmitSound(REAL_TOILET_CONFIG.Sounds.Open, 75, math.random(90, 110))
+	end)
 end
 
 -- Initialise the physic of the entity
@@ -42,12 +49,40 @@ end
 function ENT:Use(ply)
 	if (not IsValid(ply)) then return end
 	if (not ply:IsPlayer()) then return end
-	if (self:GetIsFull() or self:GetPaperAvailable() <= 0 or IsValid(self:GetSeat())) then return end
+	if (IsValid(self:GetSeat())) then return end
+	if (self:GetPaperAvailable() <= 0) then ply:ChatPrint(real_toilet.GetTranslation("no_paper")) return end
 
-	self:CreateSeat(ply)
-	-- TODO : Gérer la chasse deau
-	-- TODO : Gérer le papier toilette
-	-- TODO : Le joueur doit rester au moins 3 secondes avant de pouvoir se lever.
+	if (self:GetIsFull() and not self:GetIsFlushed()) then
+		self:SetIsFlushed(true)
+		self:ResetSequence(4)
+		self:EmitSound(REAL_TOILET_CONFIG.Sounds.Flush, 75, math.random(90, 110))
+		timer.Create("ToiletFlush." .. self:EntIndex(), self:SequenceDuration() + 1, 1, function()
+			if (not IsValid(self)) then return end
+
+			self:SetIsFull(false)
+			self:SetIsFlushed(false)
+			if (self:GetPaperAvailable() >= 0) then
+				self:ResetSequence(2)
+				self:EmitSound(REAL_TOILET_CONFIG.Sounds.Open, 75, math.random(90, 110))
+			end
+		end)
+	elseif (ply:GetPoopValue() <= REAL_TOILET_CONFIG.Settings.MinPoopToilet) then
+		self:CreateSeat(ply)
+		self:SetHasPoop(false)
+		ply:SetPoopValue(100)
+		timer.Create("ToiletPoop." .. ply:EntIndex(), REAL_TOILET_CONFIG.Settings.PoopTime, 1, function()
+			if (not IsValid(ply)) then return end
+
+			self:EmitSound(REAL_TOILET_CONFIG.Sounds.Poop, 150, math.random(90, 110))
+			self:SetHasPoop(true)
+			if (ply._ToiletOldWalkSpeed or ply._ToiletOldRunSpeed) then
+				ply:SetWalkSpeed(ply._ToiletOldWalkSpeed)
+				ply:SetRunSpeed(ply._ToiletOldRunSpeed)
+				ply._ToiletOldWalkSpeed = nil
+				ply._ToiletOldRunSpeed = nil
+			end
+		end)
+	end
 end
 
 function ENT:CreateSeat(ply)
@@ -75,24 +110,43 @@ function ENT:InitVar( )
 	self:SetIsFull(false)
 	self:SetPaperAvailable(REAL_TOILET_CONFIG.Settings.PaperToiletCount)
 	self:SetSeat(nil)
+	self:SetHasPoop(false)
+	self:SetIsFlushed(false)
 end
 
 function ENT:ExitToilet(ply)
+	if (not ply._ToiletSeat:GetHasPoop()) then return end
+	self:SetPaperAvailable(math.Clamp(self:GetPaperAvailable() - 1, 0, REAL_TOILET_CONFIG.Settings.PaperToiletCount))
+	if (self:GetPaperAvailable() <= 0) then self:SetBodygroup(1, 1) end
+	self:CleanToilet(ply)
+	self:SetIsFull(true)
+	self:ResetSequence(1)
+	timer.Create("ToiletClose." .. self:EntIndex(), self:SequenceDuration() - 0.1, 1, function()
+		if (not IsValid(self)) then return end
+
+		self:EmitSound(REAL_TOILET_CONFIG.Sounds.Close, 75, math.random(90, 110))
+	end)
+end
+
+function ENT:CleanToilet(ply)
 	local seat = self:GetSeat()
 	if (seat) then
 		seat:Remove()
 		self:SetSeat(nil)
+		self:SetHasPoop(false)
 		if (ply:Alive()) then
 			ply:ExitVehicle()
-			ply:SetPos(self:GetPos() + Vector(40, 0, 0))
+			ply:SetPos(self:GetPos() + (self:GetForward() * 40))
 			ply._ToiletSeat = nil
 		end
 	end
 end
 
 local function ManageToiletSeat(ply)
+	ply._ToiletOldWalkSpeed = nil
+	ply._ToiletOldRunSpeed = nil
 	if (ply._ToiletSeat) then
-		ply._ToiletSeat:ExitToilet(ply)
+		ply._ToiletSeat:CleanToilet(ply)
 		ply._ToiletSeat = nil
 	end
 end
@@ -103,5 +157,6 @@ hook.Add("PlayerChangedTeam", "PlayerChangedTeam.ManageToiletSeat", ManageToilet
 hook.Add( "CanExitVehicle", "CanExitVehicle.ToiletPoop", function( veh, ply )
 	if (ply._ToiletSeat) then
 		ply._ToiletSeat:ExitToilet(ply)
+		return false
 	end
 end )
