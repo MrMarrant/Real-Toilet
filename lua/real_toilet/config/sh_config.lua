@@ -20,7 +20,7 @@ REAL_TOILET_CONFIG.NetVar = {}
 -- Model Path
 REAL_TOILET_CONFIG.Models = {}
 REAL_TOILET_CONFIG.Models.Toilet = "models/real_toilet/real_toilet.mdl"
-REAL_TOILET_CONFIG.Models.Laxatif = ""
+REAL_TOILET_CONFIG.Models.Laxative = "models/props_junk/garbage_plasticbottle001a.mdl"
 REAL_TOILET_CONFIG.Models.OrangeJuice = ""
 REAL_TOILET_CONFIG.Models.ToiletPaper = "models/paper_toilet/paper_toilet.mdl"
 
@@ -34,6 +34,7 @@ REAL_TOILET_CONFIG.Sounds.StomachNoise[2] = "real_toilet/stomach_02.mp3"
 REAL_TOILET_CONFIG.Sounds.StomachNoise[3] = "real_toilet/stomach_03.mp3"
 REAL_TOILET_CONFIG.Sounds.Open = "real_toilet/open.mp3"
 REAL_TOILET_CONFIG.Sounds.Close = "real_toilet/close.mp3"
+REAL_TOILET_CONFIG.Sounds.Drink = "real_toilet/drink.mp3"
 
 -- Settings
 REAL_TOILET_CONFIG.Settings = {}

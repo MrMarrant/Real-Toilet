@@ -22,7 +22,7 @@ end
 
 function meta:SetPoopValue(value)
     REAL_TOILET_CONFIG.Settings.PoopVars[self] = REAL_TOILET_CONFIG.Settings.PoopVars[self] or {}
-    REAL_TOILET_CONFIG.Settings.PoopVars[self]["PoopValue"] = value
+    REAL_TOILET_CONFIG.Settings.PoopVars[self]["PoopValue"] = math.Clamp(value, 0, 100)
 end
 
 function meta:GetPoopValue()
