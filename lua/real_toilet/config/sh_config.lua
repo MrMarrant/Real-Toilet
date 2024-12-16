@@ -35,6 +35,7 @@ REAL_TOILET_CONFIG.Sounds.StomachNoise[3] = "real_toilet/stomach_03.mp3"
 REAL_TOILET_CONFIG.Sounds.Open = "real_toilet/open.mp3"
 REAL_TOILET_CONFIG.Sounds.Close = "real_toilet/close.mp3"
 REAL_TOILET_CONFIG.Sounds.Drink = "real_toilet/drink.mp3"
+REAL_TOILET_CONFIG.Sounds.PS1 = "real_toilet/ps1.mp3"
 
 -- Settings
 REAL_TOILET_CONFIG.Settings = {}

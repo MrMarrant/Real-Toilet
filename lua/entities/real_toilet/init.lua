@@ -66,14 +66,18 @@ function ENT:Use(ply)
 				self:EmitSound(REAL_TOILET_CONFIG.Sounds.Open, 75, math.random(90, 110))
 			end
 		end)
-	elseif (ply:GetPoopValue() <= REAL_TOILET_CONFIG.Settings.MinPoopToilet) then
+	elseif (ply:GetPoopValue() <= REAL_TOILET_CONFIG.Settings.MinPoopToilet and not self:GetIsFull()) then
 		self:CreateSeat(ply)
 		self:SetHasPoop(false)
 		ply:SetPoopValue(100)
 		timer.Create("ToiletPoop." .. ply:EntIndex(), REAL_TOILET_CONFIG.Settings.PoopTime, 1, function()
 			if (not IsValid(ply)) then return end
 
-			self:EmitSound(REAL_TOILET_CONFIG.Sounds.Poop, 150, math.random(90, 110))
+			if (math.random(1, 500) == 1) then
+				self:EmitSound(REAL_TOILET_CONFIG.Sounds.PS1)
+			else
+				self:EmitSound(REAL_TOILET_CONFIG.Sounds.Poop, 150, math.random(90, 110))
+			end
 			self:SetHasPoop(true)
 			if (ply._ToiletOldWalkSpeed or ply._ToiletOldRunSpeed) then
 				ply:SetWalkSpeed(ply._ToiletOldWalkSpeed)
