@@ -66,7 +66,7 @@ function ENT:Use(ply)
 				self:EmitSound(REAL_TOILET_CONFIG.Sounds.Open, 75, math.random(90, 110))
 			end
 		end)
-	elseif (ply:GetPoopValue() <= REAL_TOILET_CONFIG.Settings.MinPoopToilet and not self:GetIsFull()) then
+	elseif ((ply:GetPoopValue() <= REAL_TOILET_CONFIG.Settings.MinPoopToilet or not GetConVar("PoopMeterEnabled"):GetBool()) and not self:GetIsFull()) then
 		self:CreateSeat(ply)
 		self:SetHasPoop(false)
 		ply:SetPoopValue(100)
